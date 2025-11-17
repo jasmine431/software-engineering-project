@@ -1,6 +1,8 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -42,6 +44,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.material3.window.size.class1)
+    implementation(libs.androidx.foundation)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -49,5 +53,16 @@ dependencies {
     implementation("androidx.room:room-runtime:2.8.3")
     annotationProcessor("androidx.room:room-compiler:2.8.3")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.4")
+
+    implementation("androidx.activity:activity-compose:1.11.0")
+    implementation("androidx.activity:activity-ktx:1.11.0")
+
+    implementation(platform("androidx.compose:compose-bom:2025.09.00"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation("androidx.compose.material3:material3-window-size-class")
+    implementation("androidx.compose.ui:ui-tooling")
+    implementation("androidx.compose.runtime:runtime-livedata:1.9.1")
 
 }

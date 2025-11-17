@@ -26,6 +26,8 @@ abstract class AppDataBase : RoomDatabase() {
 
     abstract fun habitReminderDao(): HabitReminderDao
 
+    abstract fun encouragementDao(): EncouragementDao
+
     companion object {
         @Volatile
         private var instance: AppDataBase? = null
