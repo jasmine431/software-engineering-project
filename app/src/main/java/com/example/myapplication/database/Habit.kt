@@ -74,6 +74,7 @@ data class Habit(
 
     @ColumnInfo(
         name = "streak",
+        defaultValue = "0",
     )
     val streak: Int,
 

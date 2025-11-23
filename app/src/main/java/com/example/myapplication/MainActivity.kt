@@ -78,10 +78,52 @@ class MainActivity : AppCompatActivity() {
 //            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
 //            insets
 //        }
+        println("=== DEBUG APPLICATION INFO ===")
+        println("1. Application class: ${application.javaClass.name}")
+        println("2. Application package: ${application.packageName}")
+        println("3. Expected class: com.example.myapplication.HabitMakerApplication")
+        println("4. Classes match: ${application.javaClass.name == "com.example.myapplication.HabitMakerApplication"}")
 
+        try {
+            val app = application as HabitMakerApplication
+            println("5. Cast to HabitMakerApplication: SUCCESS")
+            println("6. HabitRepository: ${app.habitRepository}")
+        } catch (e: ClassCastException) {
+            println("5. Cast to HabitMakerApplication: FAILED - ${e.message}")
+        } catch (e: Exception) {
+            println("5. Other error: ${e.javaClass.name} - ${e.message}")
+        }
+        println("=== DEBUG END ===")
+
+//        setContent {
+//            MaterialTheme {
+//                Surface(modifier = Modifier.fillMaxSize()) {
+//                    val navController = rememberNavController()
+//
+//                    NavHost(
+//                        navController = navController,
+//                        startDestination = "main"
+//                    ) {
+//                        composable("main") {
+//                            MainScreen(navController = navController)
+//                        }
+//
+//                        composable("createHabitScreen") {
+//                            CreateHabitScreen(
+//                                navController = navController,
+//                                habitViewModel = null,
+//                                encouragementViewModel = null,
+//                                reminderViewModel = null
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
         setContent {
+            val startDestination = "MainScreen"
             MaterialTheme {
-                val startDestination = "MainScreen"
 
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
@@ -105,7 +147,7 @@ class MainActivity : AppCompatActivity() {
                                 navController = navController,
                                 habitViewModel = habitViewModel,
                                 encouragementViewModel = encouragementViewModel,
-                                reminderViewModel = reminderViewModel
+                                reminderViewModel = reminderViewModel,
 
                             )
                         }

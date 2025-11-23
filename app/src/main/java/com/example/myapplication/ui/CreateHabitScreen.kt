@@ -11,10 +11,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Save
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipDefaults
@@ -48,131 +51,99 @@ import java.time.DayOfWeek
 fun CreateHabitScreen(
     navController: NavController,
     //appSettingsViewModel: AppSettingsViewModel,
-    habitViewModel: HabitViewModel,
-    encouragementViewModel: EncouragementViewModel,
-    reminderViewModel: HabitReminderViewModel,
+    habitViewModel: HabitViewModel?,
+    encouragementViewModel: EncouragementViewModel?,
+    reminderViewModel: HabitReminderViewModel?,
 ) {
-    //val settings by appSettingsViewModel.appSettings.asLiveData().observeAsState()
-    //val firstDayOfWeek = settings?.firstDayOfWeek ?: DayOfWeek.SUNDAY
+//    val settings by appSettingsViewModel.appSettings.asLiveData().observeAsState()
+//    val firstDayOfWeek = settings?.firstDayOfWeek ?: DayOfWeek.SUNDAY
 //    val firstDayOfWeek = DayOfWeek.SUNDAY
-//    val scrollState = rememberScrollState()
-    //val tooltipPosition = TooltipDefaults.rememberPlainTooltipPositionProvider()
-//    val ctx = LocalContext.current
+    val scrollState = rememberScrollState()
+    val tooltipPosition = TooltipDefaults.rememberPlainTooltipPositionProvider()
+    val ctx = LocalContext.current
 
-//    var habit: Habit? = null
+    var habit: Habit? = null
 //    var encouragements: List<Encouragement> = listOf()
 //    var reminders: List<HabitReminder> = listOf()
 
-//    Scaffold(
-//        topBar = {
-//            TopAppBar(
-//                title = { Text(stringResource(R.string.create_habit)) },
-//                navigationIcon = {
-//                    //BackButton(
-//                      //  onBackClick = { navController.navigateUp() },
-//                    //)
-//                },
-//            )
-//        },
-//        content = { padding ->
-//            Column(
-//                modifier =
-//                    Modifier
-//                        .padding(padding)
-//                        .verticalScroll(scrollState)
-//                        .imePadding(),
-//            ) {
-//                HabitForm(
-//                    onChange = { habit = it },
-//                )
-                //HabitRemindersForm(
-                  //  initialReminders = reminders,
-                   // firstDayOfWeek = firstDayOfWeek,
-                    //onChange = { reminders = it },
-//                )
-               // EncouragementsForm(
-                 //   initialEncouragements = encouragements,
-                   // onChange = { encouragements = it },
-                //)
-//            }
-//        },
-//        floatingActionButton = {
-//            BasicTooltipBox(
-//                positionProvider = tooltipPosition,
-//                state = rememberBasicTooltipState(isPersistent = false),
-//                tooltip = {
-//                    //ToolTip(stringResource(R.string.save))
-//                },
-//            ) {
-//                FloatingActionButton(
-//                    modifier = Modifier.imePadding(),
-//                    onClick = {
-//                        habit?.let { habit ->
-//                            if (habitFormValid(habit)) {
-//                                val insert =
-//                                    HabitInsert(
-//                                        name = habit.name,
-//                                        frequency = habit.frequency,
-//                                        timesPerFrequency = habit.timesPerFrequency,
-//                                        notes = habit.notes,
-//                                        context = habit.context,
-//                                        archived = habit.archived,
-//                                    )
-//                                val insertedHabitId = habitViewModel.insertHabit(insert)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.create_habit)) },
+                navigationIcon = {
+                    BackButton(
+                        onBackClick = { navController.navigateUp() },
+                    )
+                },
+            )
+        },
+        content = { padding ->
+            Column(
+                modifier =
+                    Modifier
+                        .padding(padding)
+                        .verticalScroll(scrollState)
+                        .imePadding(),
+            ) {
+                HabitForm(
+                    onChange = { habit = it },
+                )
+
+            }
+        },
+        floatingActionButton = {
+            BasicTooltipBox(
+                positionProvider = tooltipPosition,
+                state = rememberBasicTooltipState(isPersistent = false),
+                tooltip = {
+                    ToolTip(stringResource(R.string.save))
+                },
+            ) {
+                FloatingActionButton(
+                    modifier = Modifier.imePadding(),
+                    onClick = {
 //
-//                                // The id is -1 if its a failed insert
-//                                if (insertedHabitId != -1L) {
-//                                    // Insert the reminders
-//                                    reminders.forEach { reminder ->
-//                                        val insert =
-//                                            HabitReminderInsert(
-//                                                habitId = insertedHabitId.toInt(),
-//                                                time = reminder.time,
-//                                                day = reminder.day,
-//                                            )
-//                                        reminderViewModel.insertHabitReminder(insert)
-//                                    }
-//                                    // Reschedule the reminders for that habit
-////                                    scheduleRemindersForHabit(
-////                                        ctx,
-////                                        reminders,
-////                                        habit.name,
-////                                        insertedHabitId.toInt(),
-////                                        false,
-////                                    )
-//
-//                                    // Insert the encouragements
-//                                    encouragements.forEach { enc ->
-//                                        val insert =
-//                                            EncouragementInsert(
-//                                                habitId = insertedHabitId.toInt(),
-//                                                content = enc.content,
-//                                            )
-//                                        encouragementViewModel.insertEncouragement(insert)
-//                                    }
-//
-//                                    navController.navigate("habits?id=$insertedHabitId") {
-//                                        popUpTo("habits")
-//                                    }
-//                                } else {
-//                                    Toast
-//                                        .makeText(
-//                                            ctx,
-//                                            ctx.getString(R.string.habit_already_exists),
-//                                            Toast.LENGTH_SHORT,
-//                                        ).show()
-//                                }
-//                            }
-//                        }
-//                    },
-//                    shape = CircleShape,
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Outlined.Save,
-//                        contentDescription = stringResource(R.string.save),
-//                    )
-//                }
-//            }
-//        },
-//    )
+                    },
+                    shape = CircleShape,
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Save,
+                        contentDescription = stringResource(R.string.save),
+                    )
+                }
+            }
+        },
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@Composable
+fun BackButton(onBackClick: () -> Unit) {
+    val tooltipPosition = TooltipDefaults.rememberPlainTooltipPositionProvider()
+    BasicTooltipBox(
+        positionProvider = tooltipPosition,
+        state = rememberBasicTooltipState(isPersistent = false),
+        tooltip = {
+            ToolTip(stringResource(R.string.go_back))
+        },
+    ) {
+        IconButton(
+            onClick = onBackClick,
+        ) {
+            Icon(
+                Icons.AutoMirrored.Outlined.ArrowBack,
+                contentDescription = stringResource(R.string.go_back),
+            )
+        }
+    }
+}
+
+@Composable
+fun ToolTip(text: String) {
+    ElevatedCard {
+        Text(
+            text = text,
+            modifier = Modifier.padding(SMALL_PADDING),
+        )
+    }
 }

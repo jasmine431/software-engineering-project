@@ -1,6 +1,7 @@
 package com.example.myapplication.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +13,9 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -100,6 +103,10 @@ fun HabitForm(
                 modifier = Modifier.fillMaxWidth(),
                 value = name,
                 isError = nameError,
+                colors = TextFieldDefaults.colors(
+                    focusedLabelColor = MaterialTheme.colorScheme.surfaceVariant,
+
+                ),
                 trailingIcon = {
                     if (nameError) {
                         ErrorIcon()
@@ -112,7 +119,7 @@ fun HabitForm(
             )
 
             ListPreference(
-                //modifier = Modifier.textFieldBorder(),
+                modifier = Modifier.textFieldBorder(),
                 type = ListPreferenceType.DROPDOWN_MENU,
                 value = frequency,
                 onValueChange = {
@@ -131,6 +138,7 @@ fun HabitForm(
                 title = {
                     Text(stringResource(frequency.resId))
                 },
+
             )
 
             // Only show times count when frequency is not daily
@@ -145,6 +153,9 @@ fun HabitForm(
                     modifier = Modifier.fillMaxWidth(),
                     value = timesPerFrequency.toString(),
                     isError = timesPerFreqError,
+                    colors = TextFieldDefaults.colors(
+                        focusedLabelColor = MaterialTheme.colorScheme.surfaceVariant,
+                    ),
                     supportingText = {
                         if (timesPerFreqError) {
                             Text(
@@ -164,24 +175,33 @@ fun HabitForm(
                     },
                 )
             }
+
             OutlinedTextField(
                 label = { Text(stringResource(R.string.when_and_where_optional)) },
                 modifier = Modifier.fillMaxWidth(),
                 value = context,
+                colors = TextFieldDefaults.colors(
+                    focusedLabelColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
                 onValueChange = {
                     context = it
                     habitChange()
                 },
             )
+
             OutlinedTextField(
                 label = { Text(stringResource(R.string.notes_optional)) },
                 modifier = Modifier.fillMaxWidth(),
                 value = notes,
+                colors = TextFieldDefaults.colors(
+                    focusedLabelColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
                 onValueChange = {
                     notes = it
                     habitChange()
                 },
             )
+
             SwitchPreference(
                 value = archived,
                 onValueChange = {
@@ -229,3 +249,14 @@ fun ErrorIcon() =
         tint = MaterialTheme.colorScheme.error,
         contentDescription = null,
     )
+
+@Composable
+fun Modifier.textFieldBorder(): Modifier =
+    this then
+            Modifier
+                .border(
+                    width = OutlinedTextFieldDefaults.UnfocusedBorderThickness,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    shape = OutlinedTextFieldDefaults.shape,
+                )
+
