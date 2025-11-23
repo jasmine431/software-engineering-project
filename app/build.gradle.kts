@@ -65,4 +65,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.runtime:runtime-livedata:1.9.1")
 
+    implementation("me.zhanghai.compose.preference:library:1.1.1")
+
+    implementation("androidx.navigation:navigation-compose:2.9.4")
 }

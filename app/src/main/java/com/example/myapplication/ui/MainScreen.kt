@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircleOutline
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.ExpandLess
@@ -39,12 +41,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.myapplication.database.Habit
 
 
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    navController: NavController,
+) {
     val habits = listOf(
         Habit (
             id = 1,
@@ -170,7 +175,9 @@ fun MainScreen() {
     )
 
     Column {
-        Header()
+        Header(
+            navController = navController,
+        )
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -190,7 +197,9 @@ fun MainScreen() {
 }
 
 @Composable
-fun Header() {
+fun Header(
+    navController: NavController,
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -217,10 +226,21 @@ fun Header() {
         )
 
         IconButton(
-            onClick = { },
+            onClick = {
+                try {
+
+                    navController.navigate("CreateHabitScreen")
+                } catch (e: Exception) {
+                    // 打印错误信息
+                    println("导航错误: ${e.message}")
+                }
+            },
             modifier = Modifier.width(40.dp)
         ) {
-
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "CreateHabit",
+            )
         }
     }
 

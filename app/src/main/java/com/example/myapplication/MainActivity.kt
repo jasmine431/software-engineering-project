@@ -18,6 +18,9 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.ui.Modifier
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 
 import com.example.myapplication.database.AppDataBase
 import com.example.myapplication.database.HabitRepository
@@ -32,6 +35,7 @@ import com.example.myapplication.database.HabitReminderViewModelFactory
 import com.example.myapplication.database.EncouragementRepository
 import com.example.myapplication.database.EncouragementViewModel
 import com.example.myapplication.database.EncouragementViewModelFactory
+import com.example.myapplication.ui.CreateHabitScreen
 import com.example.myapplication.ui.MainScreen
 
 //import kotlin.getValue
@@ -46,7 +50,7 @@ class HabitMakerApplication : Application() {
     val habitReminderRepository by lazy { HabitReminderRepository(database.habitReminderDao()) }
 }
 
-//@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 class MainActivity : AppCompatActivity() {
 
     private val habitViewModel: HabitViewModel by viewModels {
@@ -77,7 +81,36 @@ class MainActivity : AppCompatActivity() {
 
         setContent {
             MaterialTheme {
-                MainScreen()
+                val startDestination = "MainScreen"
+
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    val navController = rememberNavController()
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = startDestination,
+                    ) {
+                        composable (
+                            route = "MainScreen",
+                        ) {
+                            MainScreen(
+                                navController = navController,
+                            )
+                        }
+
+                        composable (
+                            route = "CreateHabitScreen",
+                        ) {
+                            CreateHabitScreen(
+                                navController = navController,
+                                habitViewModel = habitViewModel,
+                                encouragementViewModel = encouragementViewModel,
+                                reminderViewModel = reminderViewModel
+
+                            )
+                        }
+                    }
+                }
             }
         }
 
@@ -88,3 +121,4 @@ class MainActivity : AppCompatActivity() {
 
 
 }
+
