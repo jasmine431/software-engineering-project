@@ -20,34 +20,51 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-
+import androidx.lifecycle.asLiveData
 import androidx.navigation.NavController
 import com.example.myapplication.R
-
+//import com.dessalines.habitmaker.db.AppSettingsViewModel
+import com.example.myapplication.database.Encouragement
+import com.example.myapplication.database.EncouragementInsert
+import com.example.myapplication.database.EncouragementViewModel
 import com.example.myapplication.database.Habit
 import com.example.myapplication.database.HabitInsert
+import com.example.myapplication.database.HabitReminder
+import com.example.myapplication.database.HabitReminderInsert
+import com.example.myapplication.database.HabitReminderViewModel
 import com.example.myapplication.database.HabitViewModel
+//import com.dessalines.habitmaker.notifications.scheduleRemindersForHabit
+//import com.dessalines.habitmaker.ui.components.common.BackButton
+//import com.dessalines.habitmaker.ui.components.common.ToolTip
+import java.time.DayOfWeek
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CreateHabitScreen(
     navController: NavController,
-    habitViewModel: HabitViewModel,
+    //appSettingsViewModel: AppSettingsViewModel,
+    habitViewModel: HabitViewModel?,
+    encouragementViewModel: EncouragementViewModel?,
+    reminderViewModel: HabitReminderViewModel?,
 ) {
+//    val settings by appSettingsViewModel.appSettings.asLiveData().observeAsState()
+//    val firstDayOfWeek = settings?.firstDayOfWeek ?: DayOfWeek.SUNDAY
+//    val firstDayOfWeek = DayOfWeek.SUNDAY
     val scrollState = rememberScrollState()
-    val tooltipPosition = TooltipDefaults.rememberTooltipPositionProvider(
-        TooltipAnchorPosition.Above
-    )
+    val tooltipPosition = TooltipDefaults.rememberPlainTooltipPositionProvider()
     val ctx = LocalContext.current
 
     var habit: Habit? = null
+//    var encouragements: List<Encouragement> = listOf()
+//    var reminders: List<HabitReminder> = listOf()
 
     Scaffold(
         topBar = {
@@ -85,42 +102,7 @@ fun CreateHabitScreen(
                 FloatingActionButton(
                     modifier = Modifier.imePadding(),
                     onClick = {
-                        habit?.let { habit ->
-                            if (habitFormValid(habit)) {
-                                val insert =
-                                    HabitInsert(
-                                        name = habit.name,
-                                        frequency = habit.frequency,
-                                        timesPerFrequency = habit.timesPerFrequency,
-                                        notes = habit.notes,
-                                        context = habit.context,
-                                        encouragement = habit.encouragement,
-                                    )
-                                val insertedHabitId = habitViewModel.insertHabit(insert)
-
-                                // The id is -1 if its a failed insert
-                                if (insertedHabitId != -1L) {
-                                    // Insert the reminders
-
-                                    // Reschedule the reminders for that habit
-
-
-                                    // Insert the encouragements
-
-
-                                    navController.navigate("MainScreen") {
-                                        popUpTo("CreateHabitScreen")
-                                    }
-                                } else {
-                                    Toast
-                                        .makeText(
-                                            ctx,
-                                            ctx.getString(R.string.habit_already_exists),
-                                            Toast.LENGTH_SHORT,
-                                        ).show()
-                                }
-                            }
-                        }
+//
                     },
                     shape = CircleShape,
                 ) {
@@ -137,9 +119,7 @@ fun CreateHabitScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun BackButton(onBackClick: () -> Unit) {
-    val tooltipPosition = TooltipDefaults.rememberTooltipPositionProvider(
-        TooltipAnchorPosition.Above
-    )
+    val tooltipPosition = TooltipDefaults.rememberPlainTooltipPositionProvider()
     BasicTooltipBox(
         positionProvider = tooltipPosition,
         state = rememberBasicTooltipState(isPersistent = false),

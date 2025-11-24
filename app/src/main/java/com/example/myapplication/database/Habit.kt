@@ -22,7 +22,11 @@ import kotlinx.coroutines.launch
     tableName = "Habit",
     indices = [
         Index(value = ["name"], unique = true),
+        Index(value = ["points"]),
+        Index(value = ["score"]),
         Index(value = ["streak"]),
+        Index(value = ["completed"]),
+        Index(value = ["last_streak_time"]),
         Index(value = ["last_completed_time"]),
     ],
 )
@@ -51,10 +55,22 @@ data class Habit(
     val notes: String?,
 
     @ColumnInfo(
-        name = "encouragement",
+        name = "archived",
+        defaultValue = "0",
     )
-    val encouragement: String?,
+    val archived: Int,
 
+    @ColumnInfo(
+        name = "points",
+        defaultValue = "0",
+    )
+    val points: Int,
+
+    @ColumnInfo(
+        name = "score",
+        defaultValue = "0",
+    )
+    val score: Int,
 
     @ColumnInfo(
         name = "streak",
@@ -63,9 +79,21 @@ data class Habit(
     val streak: Int,
 
     @ColumnInfo(
+        name = "completed",
+        defaultValue = "0",
+    )
+    val completed: Int,
+
+    @ColumnInfo(
         name = "context",
     )
     val context: String?,
+
+    @ColumnInfo(
+        name = "last_streak_time",
+        defaultValue = "0",
+    )
+    val lastStreakTime: Long,
 
     @ColumnInfo(
         name = "last_completed_time",
@@ -100,16 +128,16 @@ data class HabitInsert(
     )
     val notes: String?,
 
+    @ColumnInfo(
+        name = "archived",
+        defaultValue = "0",
+    )
+    val archived: Int,
 
     @ColumnInfo(
         name = "context",
     )
     val context: String?,
-
-    @ColumnInfo(
-        name = "encouragement",
-    )
-    val encouragement: String?,
 )
 
 
@@ -143,14 +171,15 @@ data class HabitDataUpdate(
     val notes: String?,
 
     @ColumnInfo(
+        name = "archived",
+        defaultValue = "0",
+    )
+    val archived: Int,
+
+    @ColumnInfo(
         name = "context",
     )
     val context: String?,
-
-    @ColumnInfo(
-        name = "encouragement",
-    )
-    val encouragement: String?,
 )
 
 
@@ -162,10 +191,34 @@ data class HabitStatusUpdate(
     val id: Int,
 
     @ColumnInfo(
+        name = "points",
+        defaultValue = "0",
+    )
+    val points: Int,
+
+    @ColumnInfo(
+        name = "score",
+        defaultValue = "0",
+    )
+    val score: Int,
+
+    @ColumnInfo(
         name = "streak",
         defaultValue = "0",
     )
     val streak: Int,
+
+    @ColumnInfo(
+        name = "completed",
+        defaultValue = "0",
+    )
+    val completed: Int,
+
+    @ColumnInfo(
+        name = "last_streak_time",
+        defaultValue = "0",
+    )
+    val lastStreakTime: Long,
 
     @ColumnInfo(
         name = "last_completed_time",

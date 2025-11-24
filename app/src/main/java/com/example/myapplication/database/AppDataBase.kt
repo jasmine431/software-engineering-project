@@ -11,11 +11,12 @@ import java.util.concurrent.Executors
 
 
 @Database(
-    version = 3,
+    version = 1,
     entities = [
         Habit::class,
         HabitCheck::class,
         HabitReminder::class,
+        Encouragement::class,
     ],
     exportSchema = true
 )
@@ -26,6 +27,8 @@ abstract class AppDataBase : RoomDatabase() {
     abstract fun habitCheckDao(): HabitCheckDao
 
     abstract fun habitReminderDao(): HabitReminderDao
+
+    abstract fun encouragementDao(): EncouragementDao
 
     companion object {
         @Volatile
@@ -43,7 +46,6 @@ abstract class AppDataBase : RoomDatabase() {
                         .addMigrations(
 
                         )
-                        .fallbackToDestructiveMigration(true)
                         .addCallback(
                             object: Callback() {
                                 override fun onOpen(db: SupportSQLiteDatabase) {
@@ -54,9 +56,7 @@ abstract class AppDataBase : RoomDatabase() {
 
                                 }
                             },
-                        )
-                        .build()
-
+                        ).build()
                 instance = i
                 i
             }

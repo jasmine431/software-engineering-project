@@ -14,16 +14,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddCircleOutline
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Note
-import androidx.compose.material.icons.filled.Room
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
@@ -35,7 +32,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,20 +43,136 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myapplication.database.Habit
-import com.example.myapplication.database.HabitViewModel
-import kotlinx.coroutines.launch
-import androidx.lifecycle.viewModelScope
-import androidx.compose.runtime.rememberCoroutineScope
+
+
 
 @Composable
 fun MainScreen(
     navController: NavController,
-    habitViewModel: HabitViewModel,
 ) {
+    val habits = listOf(
+        Habit (
+            id = 1,
+            name = "drink water",
+            frequency = 0,
+            timesPerFrequency = 3,
+            notes = null,
+            archived = 0,
+            points = 0,
+            score = 0,
+            streak = 1,
+            completed = 0,
+            context = null,
+            lastStreakTime = 0,
+            lastCompletedTime = 0
+        ),
+        Habit (
+            id = 2,
+            name = "reading",
+            frequency = 0,
+            timesPerFrequency = 3,
+            notes = null,
+            archived = 0,
+            points = 0,
+            score = 0,
+            streak = 3,
+            completed = 0,
+            context = null,
+            lastStreakTime = 0,
+            lastCompletedTime = 0
+        ),
+        Habit (
+            id = 3,
+            name = "study",
+            frequency = 0,
+            timesPerFrequency = 3,
+            notes = "加油",
+            archived = 0,
+            points = 0,
+            score = 0,
+            streak = 5,
+            completed = 0,
+            context = null,
+            lastStreakTime = 0,
+            lastCompletedTime = 0
+        ),
+        Habit (
+            id = 4,
+            name = "meditation",
+            frequency = 0,
+            timesPerFrequency = 3,
+            notes = null,
+            archived = 0,
+            points = 0,
+            score = 0,
+            streak = 11,
+            completed = 0,
+            context = null,
+            lastStreakTime = 0,
+            lastCompletedTime = 0
+        ),
+        Habit (
+            id = 5,
+            name = "sleep",
+            frequency = 0,
+            timesPerFrequency = 3,
+            notes = "不要熬夜",
+            archived = 0,
+            points = 0,
+            score = 0,
+            streak = 14,
+            completed = 0,
+            context = null,
+            lastStreakTime = 0,
+            lastCompletedTime = 0
+        ),
+        Habit (
+            id = 6,
+            name = "housework",
+            frequency = 0,
+            timesPerFrequency = 3,
+            notes = null,
+            archived = 0,
+            points = 0,
+            score = 0,
+            streak = 19,
+            completed = 0,
+            context = null,
+            lastStreakTime = 0,
+            lastCompletedTime = 0
+        ),
+        Habit (
+            id = 7,
+            name = "work out",
+            frequency = 0,
+            timesPerFrequency = 3,
+            notes = null,
+            archived = 0,
+            points = 0,
+            score = 0,
+            streak = 23,
+            completed = 0,
+            context = null,
+            lastStreakTime = 0,
+            lastCompletedTime = 0
+        ),
+        Habit (
+            id = 8,
+            name = "writing",
+            frequency = 0,
+            timesPerFrequency = 3,
+            notes = null,
+            archived = 0,
+            points = 0,
+            score = 0,
+            streak = 19,
+            completed = 0,
+            context = null,
+            lastStreakTime = 0,
+            lastCompletedTime = 0
+        )
 
-
-    val habits by habitViewModel.getHabitList.collectAsState(initial = emptyList())
-
+    )
 
     Column {
         Header(
@@ -73,13 +185,13 @@ fun MainScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(habits) { habit ->
-                HabitCard(
-                    habit = habit,
-                    habitViewModel = habitViewModel
-                )
+                HabitCard(habit = habit)
             }
 
-
+    //        // 添加更多示例项目
+    //        items(15) { index ->
+    //            SampleCard(index = index + habits.size)
+    //        }
         }
     }
 }
@@ -108,13 +220,20 @@ fun Header(
 
         Text(
             text = "habit",
+            //color = MaterialTheme.colorScheme.surfaceVariant,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.displaySmall
         )
 
         IconButton(
             onClick = {
-                navController.navigate("CreateHabitScreen")
+                try {
+
+                    navController.navigate("CreateHabitScreen")
+                } catch (e: Exception) {
+                    // 打印错误信息
+                    println("导航错误: ${e.message}")
+                }
             },
             modifier = Modifier.width(40.dp)
         ) {
@@ -125,15 +244,12 @@ fun Header(
         }
     }
 
+
 }
 
 @Composable
-fun HabitCard(
-    habit: Habit,
-    habitViewModel: HabitViewModel
-) {
+fun HabitCard(habit: Habit) {
     var expanded by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
 
     Card(
         modifier = Modifier
@@ -149,7 +265,8 @@ fun HabitCard(
         ){
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(modifier = Modifier.width(12.dp))
@@ -160,6 +277,13 @@ fun HabitCard(
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
+//                    Text(
+//                        text = "${habit.streak}",
+//                        style = MaterialTheme.typography.bodyMedium,
+//                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+//                        maxLines = if (expanded) 10 else 1
+//
+//                    )
                 }
                 IconButton(
                     onClick = { expanded = !expanded }
@@ -173,25 +297,11 @@ fun HabitCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Row (
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = "已连续坚持 ${habit.streak}天",
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = FontWeight.Medium
-                )
-
-                habit.encouragement?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
+            Text(
+                text = "已连续坚持 ${habit.streak}天",
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Medium
+            )
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -214,18 +324,16 @@ fun HabitCard(
                             value = "上次完成:${habit.lastCompletedTime}"
                         )
 
-                        habit.context?.let {
-                            InfoItem(
-                                icon = Icons.Default.Room,
-                                title = "context",
-                                value = it,
-                            )
-                        }
+                        InfoItem (
+                            icon = Icons.Default.AutoAwesome,
+                            title = "积分",
+                            value = "积分:${habit.score}"
+                        )
 
                         habit.notes?.let {
                             InfoItem(
-                                icon = Icons.AutoMirrored.Filled.Note,
-                                title = "notes",
+                                icon = Icons.Default.CalendarMonth,
+                                title = "天数",
                                 value = it
                             )
                         }
@@ -233,39 +341,21 @@ fun HabitCard(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
+                    Row(
 
-                    Box(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        Row(
-                            modifier = Modifier.align(Alignment.Center),
-                            horizontalArrangement = Arrangement.Center
+//                        OutlinedButton(
+//                            onClick = { }
+//                        ) {
+//                            Text("记录进度")
+//                        }
+
+                        Button(
+                            onClick = { }
                         ) {
-                            Button(
-                                onClick = {
-
-                                }
-                            ) {
-                                Text("标记完成")
-                            }
-                        }
-
-
-                        Row(
-                            modifier = Modifier.align(Alignment.CenterEnd)
-                        ) {
-                            IconButton(
-                                onClick = {
-                                    scope.launch{
-                                        habitViewModel.delete(habit)
-                                    }
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "delete"
-                                )
-                            }
+                            Text("标记完成")
                         }
                     }
                 }
@@ -301,6 +391,28 @@ fun InfoItem(icon: ImageVector, title: String, value: String) {
         )
     }
 }
+//
+//@Composable
+//fun SampleCard(index: Int) {
+//    Card(
+//        modifier = Modifier.fillMaxWidth(),
+//        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+//    ) {
+//        Column(
+//            modifier = Modifier.padding(16.dp)
+//        ) {
+//            Text(
+//                text = "示例项目 $index",
+//                style = MaterialTheme.typography.bodyLarge
+//            )
+//            Text(
+//                text = "这是第 $index 个示例项目的描述内容",
+//                style = MaterialTheme.typography.bodySmall,
+//                color = MaterialTheme.colorScheme.onSurfaceVariant
+//            )
+//        }
+//    }
+//}
 
 
 
