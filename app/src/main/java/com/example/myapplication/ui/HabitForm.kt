@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,16 +29,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.myapplication.R
 import com.example.myapplication.database.Habit
-import com.example.myapplication.ui.SMALL_PADDING
-//import com.dessalines.habitmaker.ui.components.common.textFieldBorder
 import com.example.myapplication.utils.HabitFrequency
-import com.example.myapplication.utils.toBool
 import com.example.myapplication.utils.toDays
-import com.example.myapplication.utils.toInt
 import me.zhanghai.compose.preference.ListPreference
 import me.zhanghai.compose.preference.ListPreferenceType
 import me.zhanghai.compose.preference.ProvidePreferenceTheme
-import me.zhanghai.compose.preference.SwitchPreference
 
 @Composable
 fun HabitForm(
@@ -68,8 +62,8 @@ fun HabitForm(
         mutableStateOf(habit?.context.orEmpty())
     }
 
-    var archived by rememberSaveable {
-        mutableStateOf((habit?.archived ?: 0).toBool())
+    var encouragement by rememberSaveable {
+        mutableStateOf(habit?.encouragement.orEmpty())
     }
 
     fun habitChange() =
@@ -81,12 +75,8 @@ fun HabitForm(
                 timesPerFrequency = timesPerFrequency,
                 notes = notes,
                 context = context,
-                archived = archived.toInt(),
-                points = habit?.points ?: 0,
-                score = habit?.score ?: 0,
+                encouragement = encouragement,
                 streak = habit?.streak ?: 0,
-                completed = 0,
-                lastStreakTime = habit?.lastStreakTime ?: 0,
                 lastCompletedTime = habit?.lastCompletedTime ?: 0,
             ),
         )
@@ -202,20 +192,16 @@ fun HabitForm(
                 },
             )
 
-            SwitchPreference(
-                value = archived,
+            OutlinedTextField(
+                label = { Text(stringResource(R.string.encouragement_optional)) },
+                modifier = Modifier.fillMaxWidth(),
+                value = encouragement,
+                colors = TextFieldDefaults.colors(
+                    focusedLabelColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
                 onValueChange = {
-                    archived = it
+                    encouragement = it
                     habitChange()
-                },
-                title = {
-                    Text(stringResource(R.string.archived))
-                },
-                icon = {
-                    Icon(
-                        imageVector = Icons.Default.Archive,
-                        contentDescription = null,
-                    )
                 },
             )
         }
