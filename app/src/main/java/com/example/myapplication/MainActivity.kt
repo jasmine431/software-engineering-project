@@ -20,6 +20,7 @@ import com.example.myapplication.database.HabitViewModel
 import com.example.myapplication.database.HabitViewModelFactory
 import com.example.myapplication.ui.CreateHabitScreen
 import com.example.myapplication.ui.MainScreen
+import com.example.myapplication.ui.SettingsScreen
 
 
 class HabitMakerApplication : Application() {
@@ -65,8 +66,15 @@ class MainActivity : AppCompatActivity() {
                             CreateHabitScreen(
                                 navController = navController,
                                 habitViewModel = habitViewModel,
-
                                 )
+                        }
+
+                        composable (
+                            route = "SettingsScreen",
+                        ) {
+                            SettingsScreen(
+                                navController = navController
+                            )
                         }
                     }
                 }

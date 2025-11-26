@@ -95,6 +95,7 @@ fun CreateHabitScreen(
                                         notes = habit.notes,
                                         context = habit.context,
                                         encouragement = habit.encouragement,
+                                        targetTimes = habit.targetTimes,
                                     )
                                 val insertedHabitId = habitViewModel.insertHabit(insert)
 

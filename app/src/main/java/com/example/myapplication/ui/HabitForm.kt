@@ -66,6 +66,11 @@ fun HabitForm(
         mutableStateOf(habit?.encouragement.orEmpty())
     }
 
+    var targetTimes by rememberSaveable {
+        mutableIntStateOf(habit?.targetTimes ?: -1)
+    }
+
+
     fun habitChange() =
         onChange(
             Habit(
@@ -78,6 +83,9 @@ fun HabitForm(
                 encouragement = encouragement,
                 streak = habit?.streak ?: 0,
                 lastCompletedTime = habit?.lastCompletedTime ?: 0,
+                targetTimes = targetTimes,
+                currentTimes = habit?.currentTimes ?: 0,
+                completedToday = habit?.completedToday ?: false
             ),
         )
 
@@ -166,6 +174,29 @@ fun HabitForm(
                 )
             }
 
+            val targetTimesError = !requiredNumIsValid(targetTimes)
+            OutlinedTextField(
+                label = { Text(stringResource(R.string.target)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+                value = if(targetTimes < 0) "" else targetTimes.toString(),
+                isError = targetTimesError,
+                colors = TextFieldDefaults.colors(
+                    focusedLabelColor = MaterialTheme.colorScheme.surfaceVariant
+                ),
+                trailingIcon = {
+                    if (targetTimesError) {
+                        ErrorIcon()
+                    }
+                },
+                onValueChange = {
+                    targetTimes = it.toIntOrNull() ?: -1
+                    habitChange()
+                },
+            )
+
+
+
             OutlinedTextField(
                 label = { Text(stringResource(R.string.when_and_where_optional)) },
                 modifier = Modifier.fillMaxWidth(),
@@ -215,6 +246,8 @@ fun HabitFormPreview() {
 }
 
 fun requiredFieldIsValid(name: String): Boolean = name.isNotEmpty()
+
+fun requiredNumIsValid(targetTimes: Int): Boolean = targetTimes > 0
 
 fun timesPerFrequencyIsValid(
     timesPerFrequency: Int,

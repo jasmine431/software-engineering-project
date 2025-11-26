@@ -17,6 +17,9 @@ import androidx.room.Update
 import java.io.Serializable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import com.example.myapplication.utils.epochMillisToLocalDate
 
 @Entity(
     tableName = "Habit",
@@ -73,6 +76,23 @@ data class Habit(
     )
     val lastCompletedTime: Long,
 
+    @ColumnInfo(
+        name = "current_times",
+        defaultValue = "0"
+    )
+    val currentTimes: Int,
+
+    @ColumnInfo(
+        name = "target_times",
+    )
+    val targetTimes: Int,
+
+    @ColumnInfo(
+        name = "completed_today",
+        defaultValue = "false"
+    )
+    val completedToday: Boolean,
+
     ) : Serializable
 
 
@@ -110,6 +130,13 @@ data class HabitInsert(
         name = "encouragement",
     )
     val encouragement: String?,
+
+
+    @ColumnInfo(
+        name = "target_times",
+        defaultValue = "1",
+    )
+    val targetTimes: Int,
 )
 
 
@@ -151,6 +178,12 @@ data class HabitDataUpdate(
         name = "encouragement",
     )
     val encouragement: String?,
+
+    @ColumnInfo(
+        name = "target_times",
+        defaultValue = "1",
+    )
+    val targetTimes: Int,
 )
 
 
@@ -171,7 +204,19 @@ data class HabitStatusUpdate(
         name = "last_completed_time",
         defaultValue = "0",
     )
-    val lastCompletedTime: Long
+    val lastCompletedTime: Long,
+
+    @ColumnInfo(
+        name = "current_times",
+        defaultValue = "0",
+    )
+    val currentTimes: Int,
+
+    @ColumnInfo(
+        name = "completed_today",
+        defaultValue = "false",
+    )
+    val completedToday: Boolean
 )
 
 
@@ -200,6 +245,9 @@ interface HabitDao {
 
     @Delete
     suspend fun deleteHabit(habit: Habit)
+
+    @Update(entity = Habit::class)
+    suspend fun updateHabits(habits: List<Habit>)
 }
 
 class HabitRepository(
@@ -222,7 +270,30 @@ class HabitRepository(
     suspend fun updateHabitStatus(habitStatus: HabitStatusUpdate) = habitDao.updateHabitStatus(habitStatus)
 
     @WorkerThread
-    suspend fun delete(habit: Habit) = habitDao.deleteHabit(habit)
+    suspend fun deleteHabit(habit: Habit) = habitDao.deleteHabit(habit)
+
+    @WorkerThread
+    suspend fun updateHabits() {
+        val habits = habitDao.getHabitListSync()
+        if (habits.isEmpty()) return
+
+        val habitsToUpdate = habits
+            .filter {
+                habit ->
+                ChronoUnit.DAYS.between(LocalDate.now(),habit.lastCompletedTime.epochMillisToLocalDate()) > 1
+            }
+            .map {
+                habit ->
+                habit.copy(
+                    streak = 0
+                )
+            }
+
+        if (habitsToUpdate.isNotEmpty()) {
+            habitDao.updateHabits(habitsToUpdate)
+        }
+
+    }
 
 }
 
@@ -243,7 +314,9 @@ class HabitViewModel(
 
     fun updateHabitStatus(habitStatus: HabitStatusUpdate) = viewModelScope.launch { repository.updateHabitStatus(habitStatus) }
 
-    fun delete(habit: Habit) = viewModelScope.launch { repository.delete(habit) }
+    fun deleteHabit(habit: Habit) = viewModelScope.launch { repository.deleteHabit(habit) }
+
+    fun updateHabits() = viewModelScope.launch { repository.updateHabits() }
 }
 
 class HabitViewModelFactory(

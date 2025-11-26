@@ -18,11 +18,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Note
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Note
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Room
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Settings
@@ -34,9 +34,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,80 +55,125 @@ import androidx.navigation.NavController
 import com.example.myapplication.database.Habit
 import com.example.myapplication.database.HabitViewModel
 import kotlinx.coroutines.launch
-import androidx.lifecycle.viewModelScope
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
+import com.example.myapplication.database.HabitStatusUpdate
+import com.example.myapplication.utils.epochMillisToLocalDate
+import com.example.myapplication.utils.toEpochMillis
+import com.example.myapplication.utils.toYyMmDdString
+import java.time.LocalDate
+
 
 @Composable
 fun MainScreen(
     navController: NavController,
     habitViewModel: HabitViewModel,
 ) {
-
+    LaunchedEffect(key1 = Unit) {
+        habitViewModel.updateHabits()
+    }
 
     val habits by habitViewModel.getHabitList.collectAsState(initial = emptyList())
+    var selectedTab by remember { mutableIntStateOf(0) }
 
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    icon = { Icon(
+                            imageVector = Icons.Default.Home,
+                            contentDescription = "首页"
+                    ) },
+                    label = { Text("首页") },
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 }
+                )
 
-    Column {
-        Header(
-            navController = navController,
-        )
+                NavigationBarItem(
+                    icon = { Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "CreateHabit",
+                    ) },
+                    label = { Text("创建") },
+                    selected = selectedTab == 1,
+                    onClick = {
+                        selectedTab == 1
+                        navController.navigate("CreateHabitScreen")
+                    }
+                )
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(habits) { habit ->
-                HabitCard(
-                    habit = habit,
-                    habitViewModel = habitViewModel
+                NavigationBarItem(
+                    icon = { Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "设置"
+                    ) },
+                    label = { Text("设置") },
+                    selected = selectedTab == 2,
+                    onClick = {
+                        selectedTab = 2
+                        navController.navigate("SettingsScreen")
+                    }
                 )
             }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            Header(
+            )
 
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(habits) { habit ->
+                    HabitCard(
+                        habit = habit,
+                        habitViewModel = habitViewModel
+                    )
+                }
 
+            }
         }
     }
 }
 
 @Composable
-fun Header(
-    navController: NavController,
-) {
+fun Header(){
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 35.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
 
-        IconButton(
-            onClick = { },
-            modifier = Modifier.width(40.dp)
-
-        ) {
-            Icon(
-                imageVector = Icons.Default.Settings,
-                contentDescription = "settings",
-            )
-        }
-
-        Text(
-            text = "habit",
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.displaySmall
+        HorizontalDivider(
+            modifier = Modifier
+                .weight(1f)
+                .height(1.dp),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
         )
 
-        IconButton(
-            onClick = {
-                navController.navigate("CreateHabitScreen")
-            },
-            modifier = Modifier.width(40.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "CreateHabit",
-            )
-        }
+
+        Text(
+            text = "Habit List",
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.displaySmall,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        HorizontalDivider(
+            modifier = Modifier
+                .weight(1f)
+                .height(1.dp),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+        )
+
+
     }
 
 }
@@ -210,15 +261,15 @@ fun HabitCard(
                     ) {
                         InfoItem (
                             icon = Icons.Default.Schedule,
-                            title = "上次完成",
-                            value = "上次完成:${habit.lastCompletedTime}"
+                            title = "last_complete_date",
+                            value = "上次完成\n${if(habit.lastCompletedTime == 0L) "" else habit.lastCompletedTime.epochMillisToLocalDate().toYyMmDdString()}"
                         )
 
                         habit.context?.let {
                             InfoItem(
                                 icon = Icons.Default.Room,
                                 title = "context",
-                                value = it,
+                                value = "时间地点\n${it}",
                             )
                         }
 
@@ -226,7 +277,7 @@ fun HabitCard(
                             InfoItem(
                                 icon = Icons.AutoMirrored.Filled.Note,
                                 title = "notes",
-                                value = it
+                                value = "备注\n${it}"
                             )
                         }
                     }
@@ -243,8 +294,21 @@ fun HabitCard(
                         ) {
                             Button(
                                 onClick = {
-
-                                }
+                                    if (habit.currentTimes + 1 == habit.targetTimes) {
+                                        habitViewModel.deleteHabit(habit)
+                                    } else {
+                                        val updateStatus =
+                                            HabitStatusUpdate(
+                                                id = habit.id,
+                                                lastCompletedTime = LocalDate.now().toEpochMillis(),
+                                                streak = habit.streak + 1,
+                                                currentTimes = habit.currentTimes + 1,
+                                                completedToday = true,
+                                            )
+                                        habitViewModel.updateHabitStatus(updateStatus)
+                                    }
+                                },
+                                enabled = !habit.completedToday
                             ) {
                                 Text("标记完成")
                             }
@@ -257,7 +321,7 @@ fun HabitCard(
                             IconButton(
                                 onClick = {
                                     scope.launch{
-                                        habitViewModel.delete(habit)
+                                        habitViewModel.deleteHabit(habit)
                                     }
                                 }
                             ) {
@@ -269,6 +333,44 @@ fun HabitCard(
                         }
                     }
                 }
+
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.LocalFireDepartment,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "已经完成 ${habit.streak} 天",
+                                style = MaterialTheme.typography.bodySmall,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                        Text(
+                            text = "${habit.currentTimes} / ${habit.targetTimes}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    LinearProgressIndicator(
+                        progress = { habit.currentTimes.toFloat() / habit.targetTimes.toFloat() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(MaterialTheme.shapes.small),
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                }
+
             } else {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -297,7 +399,8 @@ fun InfoItem(icon: ImageVector, title: String, value: String) {
         Text(
             text = value,
             style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
+            textAlign = TextAlign.Center
         )
     }
 }

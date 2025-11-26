@@ -59,6 +59,7 @@
     <string name="x_times_per_month">%1$s times per month</string>
     <string name="x_times_per_year">%1$s times per year</string>
     <string name="out_of_range">Out of range</string>
+    <string name="target">Target Times</string>
     <string name="notes_optional">Notes (optional)</string>
     <string name="encouragement_optional">Encouragement (optional)</string>
     <string name="when_and_where_optional">When and where? (optional)</string>

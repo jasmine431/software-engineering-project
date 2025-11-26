@@ -11,7 +11,7 @@ import java.util.concurrent.Executors
 
 
 @Database(
-    version = 3,
+    version = 6,
     entities = [
         Habit::class,
         HabitCheck::class,
