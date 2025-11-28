@@ -17,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -51,7 +50,7 @@ fun HabitForm(
     }
 
     var timesPerFrequency by rememberSaveable {
-        mutableIntStateOf(habit?.timesPerFrequency ?: 1)
+        mutableStateOf(habit?.timesPerFrequency?.toString() ?: "")
     }
 
     var notes by rememberSaveable {
@@ -67,7 +66,7 @@ fun HabitForm(
     }
 
     var targetTimes by rememberSaveable {
-        mutableIntStateOf(habit?.targetTimes ?: -1)
+        mutableStateOf(habit?.targetTimes?.toString() ?: "")
     }
 
 
@@ -77,13 +76,13 @@ fun HabitForm(
                 id = habit?.id ?: 0,
                 name = name,
                 frequency = frequency.ordinal,
-                timesPerFrequency = timesPerFrequency,
+                timesPerFrequency = timesPerFrequency.toIntOrNull() ?: 1,
                 notes = notes,
                 context = context,
                 encouragement = encouragement,
                 streak = habit?.streak ?: 0,
                 lastCompletedTime = habit?.lastCompletedTime ?: 0,
-                targetTimes = targetTimes,
+                targetTimes = targetTimes.toIntOrNull() ?: 1,
                 currentTimes = habit?.currentTimes ?: 0,
                 completedToday = habit?.completedToday ?: false
             ),
@@ -125,7 +124,7 @@ fun HabitForm(
 
                     // Force times per frequency to 1 if daily
                     if (frequency == HabitFrequency.Daily) {
-                        timesPerFrequency = 1
+                        timesPerFrequency = "1"
                     }
                     habitChange()
                 },
@@ -149,26 +148,18 @@ fun HabitForm(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
-                    value = timesPerFrequency.toString(),
+                    value = timesPerFrequency,
                     isError = timesPerFreqError,
                     colors = TextFieldDefaults.colors(
                         focusedLabelColor = MaterialTheme.colorScheme.surfaceVariant,
                     ),
-                    supportingText = {
-                        if (timesPerFreqError) {
-                            Text(
-                                text = stringResource(R.string.out_of_range),
-                                color = MaterialTheme.colorScheme.error,
-                            )
-                        }
-                    },
                     trailingIcon = {
                         if (timesPerFreqError) {
                             ErrorIcon()
                         }
                     },
                     onValueChange = {
-                        timesPerFrequency = it.toIntOrNull() ?: 0
+                        timesPerFrequency = it
                         habitChange()
                     },
                 )
@@ -179,7 +170,7 @@ fun HabitForm(
                 label = { Text(stringResource(R.string.target)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
-                value = if(targetTimes < 0) "" else targetTimes.toString(),
+                value = targetTimes,
                 isError = targetTimesError,
                 colors = TextFieldDefaults.colors(
                     focusedLabelColor = MaterialTheme.colorScheme.surfaceVariant
@@ -190,7 +181,7 @@ fun HabitForm(
                     }
                 },
                 onValueChange = {
-                    targetTimes = it.toIntOrNull() ?: -1
+                    targetTimes = it
                     habitChange()
                 },
             )
@@ -247,19 +238,20 @@ fun HabitFormPreview() {
 
 fun requiredFieldIsValid(name: String): Boolean = name.isNotEmpty()
 
-fun requiredNumIsValid(targetTimes: Int): Boolean = targetTimes > 0
+fun requiredNumIsValid(targetTimes: String): Boolean = (targetTimes.toIntOrNull() ?: -1) > 0
 
 fun timesPerFrequencyIsValid(
-    timesPerFrequency: Int,
+    timesPerFrequency: String,
     frequency: HabitFrequency,
-): Boolean = IntRange(1, frequency.toDays()).contains(timesPerFrequency)
+): Boolean = IntRange(1, frequency.toDays()).contains(timesPerFrequency.toIntOrNull())
 
 fun habitFormValid(habit: Habit): Boolean =
     requiredFieldIsValid(habit.name) &&
             timesPerFrequencyIsValid(
-                habit.timesPerFrequency,
+                habit.timesPerFrequency.toString(),
                 HabitFrequency.entries[habit.frequency],
-            )
+            ) &&
+            requiredNumIsValid(habit.targetTimes.toString())
 
 @Composable
 fun ErrorIcon() =

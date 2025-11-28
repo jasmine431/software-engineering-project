@@ -280,12 +280,13 @@ class HabitRepository(
         val habitsToUpdate = habits
             .filter {
                 habit ->
-                ChronoUnit.DAYS.between(LocalDate.now(),habit.lastCompletedTime.epochMillisToLocalDate()) > 1
+                ChronoUnit.DAYS.between(habit.lastCompletedTime.epochMillisToLocalDate(), LocalDate.now()) > 0
             }
             .map {
                 habit ->
                 habit.copy(
-                    streak = 0
+                    streak = if (ChronoUnit.DAYS.between(habit.lastCompletedTime.epochMillisToLocalDate(), LocalDate.now()) > 1) 0 else habit.streak,
+                    completedToday = false
                 )
             }
 
